@@ -27,6 +27,10 @@ public class AdminController {
 	@Autowired
 	SessionFactory factory;
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	JavaMailSender mailer;
+	
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String login(ModelMap model) {
 		model.addAttribute("login", new Users());
@@ -59,6 +63,28 @@ public class AdminController {
 			} else {
 				model.addAttribute("message2",""+ username);
 				model.addAttribute("message", "Đăng nhập thành công với tên " + username);
+				try{
+					//Tao mail
+					MimeMessage mail = mailer.createMimeMessage();
+					//Su dung lop tro giup
+					MimeMessageHelper helper = new MimeMessageHelper(mail);
+					String from = "quochuyslay@gmail.com";
+					helper.setFrom(from,from);
+					helper.setTo(login.getEmail());
+					helper.setReplyTo(from,from);
+					helper.setSubject(subject);
+					
+					//sinh số ngẫu nhiên Java
+					String body = "OTP is " + "";
+					helper.setText(body,true);
+
+					//Gui mail
+					mailer.send(mail);
+					model.addAttribute("message","Gửi mail thành công !");		
+				}
+				catch(Exception ex){
+					model.addAttribute("message","Gửi mail thất bại !");
+				}
 			}
 			return "admin/account";
 		}
