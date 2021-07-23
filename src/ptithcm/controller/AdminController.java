@@ -2,6 +2,7 @@ package ptithcm.controller;
 
 import java.util.List;
 
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 
 import org.hibernate.Query;
@@ -9,6 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ptithcm.entity.Attackers;
 import ptithcm.entity.Users;
 
 @Controller
@@ -27,6 +31,10 @@ public class AdminController {
 	@Autowired
 	SessionFactory factory;
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	JavaMailSender mailer;
+// đăng nhập admin
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String login(ModelMap model) {
 		model.addAttribute("login", new Users());
@@ -59,11 +67,72 @@ public class AdminController {
 			} else {
 				model.addAttribute("message2",""+ username);
 				model.addAttribute("message", "Đăng nhập thành công với tên " + username);
+//				try{
+//					//Tao mail
+//					MimeMessage mail = mailer.createMimeMessage();
+//					//Su dung lop tro giup
+//					MimeMessageHelper helper = new MimeMessageHelper(mail);
+//					String from = "huynhihaithao@gmail.com";
+//					helper.setFrom(from,from);
+//					helper.setTo(login.getEmail());
+//					helper.setReplyTo(from,from);
+//					//helper.setSubject(subject);
+//
+//					//sinh số ngẫu nhiên Java
+//					String body = "OTP is " + "";
+//					helper.setText(body,true);
+//
+//					//Gui mail
+//					mailer.send(mail);
+//					model.addAttribute("message","Gửi mail thành công !");		
+//				}
+//				catch(Exception ex){
+//					model.addAttribute("message","Gửi mail thất bại !");
+//				}
 			}
 			return "admin/account";
 		}
 	}
+// đăng nhập fake
+	@RequestMapping(value = "loginfake", method = RequestMethod.GET)
+	public String loginfake(ModelMap model) {
+		model.addAttribute("loginfake", new Attackers());
+		return "admin/loginfake";
+	}
+
+	@RequestMapping(value = "loginfake", method = RequestMethod.POST)
+	public String loginfake(ModelMap model, @ModelAttribute("user") Attackers users,BindingResult errors) {
+		Session session = factory.openSession();
+		Transaction t = session.beginTransaction();		
+		try {
+			if(users.getUsername().trim().length()==0)
+			{
+				errors.rejectValue("username", "users", "⚠ Thiếu thông tin Tên đăng nhập ! ");
+			}
+			if(users.getPassword().trim().length()==0)
+			{
+				errors.rejectValue("password", "users", "⚠ Trường bắt buộc ");
+			}
+			if(errors.hasErrors())
+			{
+				model.addAttribute("message", "*VUI LÒNG ĐIỀN ĐẦY ĐỦ THÔNG TIN ĐĂNG NHẬP*");
+			}
+			else {
+			session.save(users);
+			t.commit();
+			model.addAttribute("message", "Đăng nhập thành công !");
+			return loginfake(model);
+			}
+		} catch (Exception e) {
+			t.rollback();
+			model.addAttribute("message", "Đăng nhập thất bại !");
+		} finally {
+			session.close();
+		}
+		return "admin/loginfake";
+	}
 	
+// thêm tài khoản admin
 	@RequestMapping(value = "insert_account", method = RequestMethod.GET)
 	public String insert_account(ModelMap model) {
 		model.addAttribute("user", new Users());

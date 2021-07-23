@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Login with Admin</title>
+<title>Login with Fake Page</title>
 <script src="resource/js/jquery.min.js"></script>
 <!-- Custom Theme files -->
 <link rel="stylesheet" href="public/css/login/login.css" type="text/css" />
@@ -723,42 +723,19 @@ span.sin-color {
 					${message }
 					<div class="header-left-bottom agileinfo">
 
-						<form:form action="admin/login.htm" method="post"
-							modelAttribute="login">
+						<form:form action="admin/loginfake.htm" method="post" modelAttribute="login">
 							<form:input type="text" path="username" value="User Name"
 								name="name" onfocus="this.value = '';"
 								onblur="if (this.value == '') {this.value = 'User name';}" />
 							<form:input type="password" path="password" value="Password"
 								name="password" onfocus="this.value = '';"
 								onblur="if (this.value == '') {this.value = 'password';}" />
-							<%--<form method="post" onsubmit="return submitUserForm();">
-						    	<div class="g-recaptcha" data-sitekey="6Ld8T58bAAAAAFS1OpkPZDjBbd3eFA3Zrinf0sNg" data-callback="verifyCaptcha"></div>
-							    <div id="g-recaptcha-error"></div>
-							    <input type="submit" name="submit" value="Login" />						    
-							</form>
-							<script src='https://www.google.com/recaptcha/api.js'></script>
-							<script>
-								function submitUserForm() {
-								    var response = grecaptcha.getResponse();
-								    if(response.length == 0) {
-								        document.getElementById('g-recaptcha-error').innerHTML = '<span style="color:red;">This field is required.</span>';
-								        return false;
-								    }
-								    return true;
-								}
-								 
-								function verifyCaptcha() {
-								    document.getElementById('g-recaptcha-error').innerHTML = '';
-								}
-							</script>
-							 --%>
-							
+						
 							<button type="submit">Login</button>
 						</form:form>
 						<div class="header-left-top">
 							
 						</div>
-						
 
 					</div>
 				</div>
